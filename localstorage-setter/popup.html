@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Setter</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<h1>LocalStorage Auto-Setter</h1>
+<div id="rule-form">
+    <h2>Add New Rule</h2>
+    <input type="text" id="url-pattern" placeholder="URL Pattern (e.g., http://myDomain.com/*)">
+    <input type="text" id="ls-key" placeholder="LocalStorage Key (e.g., whereGold)">
+    <input type="text" id="ls-value" placeholder="LocalStorage Value (e.g., here)">
+    <button id="add-rule-btn">Add Rule</button>
+</div>
+<hr>
+<h2>Existing Rules</h2>
+<ul id="rules-list">
+</ul>
+<script src="popup.js"></script>
+</body>
+</html>

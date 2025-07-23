@@ -1,0 +1,22 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Build artifacts and packaging
+*.zip
+*.crx
+
+# Node.js dependencies (if you ever add them)
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDE and editor directories
+.idea/
+.vscode/
+
+# Secrets and credentials
+# This is a placeholder for future use. NEVER commit API keys or secret files.
+secrets.js
+keys.json
+*.env
