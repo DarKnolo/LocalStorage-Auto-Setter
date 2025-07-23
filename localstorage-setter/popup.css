@@ -1,74 +1,184 @@
+/* --- Modern Theme Overhaul --- */
+
+/* 1. Color Palette and Global Styles */
+:root {
+    --bg-color: #1e1e1e;
+    --surface-color: #2a2a2a;
+    --primary-color: #4f46e5;
+    --primary-hover-color: #4338ca;
+    --danger-color: #ef4444;
+    --danger-hover-color: #dc2626;
+    --text-color: #e5e7eb;
+    --text-muted-color: #9ca3af;
+    --border-color: #374151;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     width: 400px;
-    padding: 15px;
-    box-sizing: border-box;
+    margin: 0;
 }
 
+.container {
+    padding: 20px;
+}
+
+/* 2. Typography */
 h1, h2 {
-    margin-top: 0;
-    margin-bottom: 10px;
+    margin: 0;
+    font-weight: 600;
 }
 
+h1 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 16px;
+    color: var(--text-muted-color);
+    margin-bottom: 12px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 24px 0;
+}
+
+/* 3. Modern Form Elements */
 #rule-form {
     display: flex;
     flex-direction: column;
+    gap: 12px;
 }
 
-input {
-    margin-bottom: 10px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+input[type="text"] {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]::placeholder {
+    color: var(--text-muted-color);
+}
+
+input[type="text"]:focus-visible {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
 }
 
 button {
     cursor: pointer;
-    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.2s;
     border: none;
-    border-radius: 4px;
-    background-color: #007bff;
+}
+
+#add-rule-btn {
+    background-color: var(--primary-color);
     color: white;
-    font-weight: bold;
+    padding: 10px 12px;
 }
 
-button:hover {
-    background-color: #0056b3;
+#add-rule-btn:hover {
+    background-color: var(--primary-hover-color);
 }
 
-hr {
-    border: 0;
-    height: 1px;
-    background: #ddd;
-    margin: 20px 0;
+/* 4. Redesigned Rule List */
+.rules-container {
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 10px; /* Space for scrollbar */
 }
 
-ul {
+ul#rules-list {
     list-style: none;
     padding: 0;
-    max-height: 200px;
-    overflow-y: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 li {
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    margin-bottom: 8px;
+    background-color: var(--surface-color);
+    padding: 12px 15px;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 15px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+li:hover {
+    border-color: var(--border-color);
+}
+
+.rule-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     word-break: break-all;
 }
 
+.rule-line {
+    font-size: 13px;
+}
+
+.rule-line strong {
+    color: var(--text-muted-color);
+    font-weight: 500;
+}
+
+.rule-line code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* 5. Icon Button and Scrollbar Styling */
 .delete-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 5px 10px;
-    margin-left: 10px;
-    white-space: nowrap;
+    background-color: transparent;
+    color: var(--text-muted-color);
+    padding: 5px;
+    flex-shrink: 0;
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: rgba(239, 68, 68, 0.1); /* Reddish hover */
+    color: var(--danger-color);
+}
+
+/* Custom scrollbar for a cleaner look */
+.rules-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rules-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.rules-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+.rules-container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted-color);
 }
