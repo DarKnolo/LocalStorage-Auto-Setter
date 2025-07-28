@@ -1,31 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LocalStorage Setter</title>
-    <link rel="stylesheet" href="popup.css">
     <meta charset="UTF-8">
+    <title>LocalStorage Auto-Setter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-<div class="container">
+<div class="app-container">
     <header>
         <h1>LocalStorage Auto-Setter</h1>
+        <a href="https://www.buymeacoffee.com/darknolo" id="support-link" target="_blank" title="Support this project">
+        </a>
     </header>
 
-    <div id="rule-form">
-        <h2>Add New Rule</h2>
-        <input type="text" id="url-pattern" placeholder="URL Pattern (e.g., http://myDomain.com/*)">
-        <input type="text" id="ls-key" placeholder="LocalStorage Key (e.g., whereGold)">
-        <input type="text" id="ls-value" placeholder="LocalStorage Value (e.g., here)">
-        <button id="add-rule-btn">Add Rule</button>
-    </div>
+    <main>
+        <section class="form-section">
+            <h2>Add New Rule</h2>
+            <div id="rule-form">
+                <input type="text" id="url-pattern" placeholder="e.g. *.domain.com/*" title="e.g. *.domain.com/* or https://localhost:3000/*">
+                <input type="text" id="ls-key" placeholder="e.g. preview_mode" title="The localStorage key to set">
+                <input type="text" id="ls-value" placeholder="e.g. true" title="The value to set for the key">
+                <button id="add-rule-btn">Add Rule</button>
+            </div>
+        </section>
 
-    <hr>
-
-    <div class="rules-container">
-        <h2>Existing Rules</h2>
-        <ul id="rules-list">
-        </ul>
-    </div>
+        <section class="rules-section">
+            <h2>Active Rules</h2>
+            <div class="rules-container">
+                <ul id="rules-list">
+                </ul>
+            </div>
+        </section>
+    </main>
 </div>
 <script src="popup.js"></script>
 </body>

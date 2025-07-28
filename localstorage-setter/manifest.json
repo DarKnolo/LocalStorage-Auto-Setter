@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "LocalStorage Auto-Setter",
-  "version": "1.0",
+  "version": "1.4",
   "description": "Automatically sets specified key-value pairs in localStorage for matching websites.",
   "permissions": [
     "storage",

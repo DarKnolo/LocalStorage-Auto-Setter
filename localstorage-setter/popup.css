@@ -1,184 +1,90 @@
-/* --- Modern Theme Overhaul --- */
-
-/* 1. Color Palette and Global Styles */
 :root {
-    --bg-color: #1e1e1e;
-    --surface-color: #2a2a2a;
-    --primary-color: #4f46e5;
-    --primary-hover-color: #4338ca;
-    --danger-color: #ef4444;
-    --danger-hover-color: #dc2626;
-    --text-color: #e5e7eb;
-    --text-muted-color: #9ca3af;
-    --border-color: #374151;
+    --bg-color: #19192A;
+    --surface-color: #242438;
+    --border-color: #3D3D54;
+    --text-color: #F0F0F0;
+    --text-muted-color: #8A8A9E;
+    --primary-gradient: linear-gradient(90deg, #FF8C42, #FF3D77);
+    --primary-gradient-hover: linear-gradient(90deg, #FF9959, #FF558D);
+    --accent-color: #6A67FF;
+    --danger-color: #FF5555;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--text-color);
-    width: 400px;
+    width: 380px;
     margin: 0;
+    animation: fadeIn 0.3s ease-out;
 }
 
-.container {
-    padding: 20px;
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* 2. Typography */
-h1, h2 {
-    margin: 0;
-    font-weight: 600;
-}
+.app-container { padding: 16px; }
 
-h1 {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-h2 {
-    font-size: 16px;
-    color: var(--text-muted-color);
-    margin-bottom: 12px;
-}
-
-hr {
-    border: none;
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 24px 0;
-}
-
-/* 3. Modern Form Elements */
-#rule-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-input[type="text"] {
-    background-color: var(--surface-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 14px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-input[type="text"]::placeholder {
-    color: var(--text-muted-color);
-}
-
-input[type="text"]:focus-visible {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
-}
-
-button {
-    cursor: pointer;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
-    transition: background-color 0.2s;
-    border: none;
-}
-
-#add-rule-btn {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 10px 12px;
-}
-
-#add-rule-btn:hover {
-    background-color: var(--primary-hover-color);
-}
-
-/* 4. Redesigned Rule List */
-.rules-container {
-    max-height: 250px;
-    overflow-y: auto;
-    padding-right: 10px; /* Space for scrollbar */
-}
-
-ul#rules-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-li {
-    background-color: var(--surface-color);
-    padding: 12px 15px;
-    border-radius: 8px;
+/* --- Header & Support Link --- */
+header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
+    margin-bottom: 24px;
 }
+h1 { font-size: 18px; font-weight: 600; margin: 0; }
+h2 { font-size: 14px; font-weight: 500; color: var(--text-muted-color); margin: 0 0 12px 0; }
 
-li:hover {
-    border-color: var(--border-color);
-}
-
-.rule-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    word-break: break-all;
-}
-
-.rule-line {
-    font-size: 13px;
-}
-
-.rule-line strong {
-    color: var(--text-muted-color);
-    font-weight: 500;
-}
-
-.rule-line code {
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-    color: var(--text-color);
-    background-color: var(--bg-color);
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-/* 5. Icon Button and Scrollbar Styling */
-.delete-btn {
+#support-link {
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    border: none;
     background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--text-muted-color);
-    padding: 5px;
-    flex-shrink: 0;
+    transition: background-color 0.2s, color 0.2s;
+}
+#support-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
 }
 
-.delete-btn:hover {
-    background-color: rgba(239, 68, 68, 0.1); /* Reddish hover */
-    color: var(--danger-color);
-}
+/* --- Form --- */
+.form-section { margin-bottom: 24px; }
+#rule-form { display: flex; flex-direction: column; gap: 10px; }
+input[type="text"] { background-color: var(--surface-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s; }
+input[type="text"]::placeholder { color: var(--text-muted-color); }
+input[type="text"]:focus-visible { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(106, 103, 255, 0.3); }
 
-/* Custom scrollbar for a cleaner look */
-.rules-container::-webkit-scrollbar {
-    width: 6px;
-}
+#add-rule-btn { cursor: pointer; border: none; border-radius: 20px; padding: 12px; font-size: 14px; font-weight: 600; color: white; background: var(--primary-gradient); transition: all 0.2s; margin-top: 4px; }
+#add-rule-btn:hover { background: var(--primary-gradient-hover); transform: translateY(-2px); }
 
-.rules-container::-webkit-scrollbar-track {
-    background: transparent;
-}
+/* --- Rules List --- */
+.rules-container { max-height: 250px; overflow-y: auto; padding-right: 5px; }
+ul#rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 
-.rules-container::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 10px;
-}
+li { background-color: var(--surface-color); border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background-color 0.2s, opacity 0.3s; }
+.rule-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; word-break: break-word; flex-grow: 1; }
+.rule-details span { font-weight: 500; color: var(--text-muted-color); }
+.rule-details code { font-family: var(--font-family); color: var(--text-color); font-weight: 500; }
 
-.rules-container::-webkit-scrollbar-thumb:hover {
-    background-color: var(--text-muted-color);
-}
+.rule-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.toggle-btn, .delete-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
+.toggle-btn:hover, .delete-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+.toggle-btn.enabled { color: var(--accent-color); }
+.toggle-btn.disabled { color: var(--text-muted-color); }
+.delete-btn { color: var(--text-muted-color); }
+.delete-btn:hover { color: var(--danger-color); }
+
+/* --- Disabled State --- */
+li.disabled { opacity: 0.6; }
+li.disabled .rule-details code { text-decoration: line-through; text-decoration-color: rgba(255, 255, 255, 0.3); }
+
+/* --- Scrollbar --- */
+.rules-container::-webkit-scrollbar { width: 5px; }
+.rules-container::-webkit-scrollbar-track { background: transparent; }
+.rules-container::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
+.rules-container::-webkit-scrollbar-thumb:hover { background-color: var(--text-muted-color); }
