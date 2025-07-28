@@ -1,14 +1,31 @@
+/* --- Polished Theme with System Fonts & Day/Night Mode --- */
+
 :root {
+    /* DARK THEME (DEFAULT) */
     --bg-color: #19192A;
     --surface-color: #242438;
     --border-color: #3D3D54;
     --text-color: #F0F0F0;
     --text-muted-color: #8A8A9E;
-    --primary-gradient: linear-gradient(90deg, #FF8C42, #FF3D77);
-    --primary-gradient-hover: linear-gradient(90deg, #FF9959, #FF558D);
     --accent-color: #6A67FF;
     --danger-color: #FF5555;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --primary-gradient: linear-gradient(90deg, #FF8C42, #FF3D77);
+    --primary-gradient-hover: linear-gradient(90deg, #FF9959, #FF558D);
+
+    /* SYSTEM FONT STACK */
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        /* LIGHT THEME OVERRIDES */
+        --bg-color: #F4F4F9;
+        --surface-color: #FFFFFF;
+        --border-color: #DCDCE5;
+        --text-color: #1A1A2A;
+        --text-muted-color: #69697A;
+        --accent-color: #5A57E0;
+    }
 }
 
 body {
@@ -24,66 +41,49 @@ body {
 
 .app-container { padding: 16px; }
 
-/* --- Header & Support Link --- */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
+/* Header & Support Link */
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 h1 { font-size: 18px; font-weight: 600; margin: 0; }
 h2 { font-size: 14px; font-weight: 500; color: var(--text-muted-color); margin: 0 0 12px 0; }
+#support-link { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; color: var(--text-muted-color); transition: background-color 0.2s, color 0.2s; }
+#support-link:hover { background-color: rgba(128, 128, 128, 0.1); color: var(--accent-color); }
 
-#support-link {
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 50%;
-    border: none;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted-color);
-    transition: background-color 0.2s, color 0.2s;
-}
-#support-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-color);
-}
-
-/* --- Form --- */
+/* Form */
 .form-section { margin-bottom: 24px; }
 #rule-form { display: flex; flex-direction: column; gap: 10px; }
 input[type="text"] { background-color: var(--surface-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s; }
 input[type="text"]::placeholder { color: var(--text-muted-color); }
-input[type="text"]:focus-visible { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(106, 103, 255, 0.3); }
+input[type="text"]:focus-visible { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent); }
 
 #add-rule-btn { cursor: pointer; border: none; border-radius: 20px; padding: 12px; font-size: 14px; font-weight: 600; color: white; background: var(--primary-gradient); transition: all 0.2s; margin-top: 4px; }
 #add-rule-btn:hover { background: var(--primary-gradient-hover); transform: translateY(-2px); }
 
-/* --- Rules List --- */
+#cancel-edit-btn { display: none; cursor: pointer; border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-size: 14px; font-weight: 600; color: var(--text-muted-color); background: transparent; transition: all 0.2s; }
+#cancel-edit-btn:hover { background-color: var(--surface-color); border-color: var(--text-muted-color); color: var(--text-color); }
+
+/* Rules List */
 .rules-container { max-height: 250px; overflow-y: auto; padding-right: 5px; }
 ul#rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 
-li { background-color: var(--surface-color); border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background-color 0.2s, opacity 0.3s; }
+li { background-color: var(--surface-color); border: 1px solid transparent; border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background-color 0.2s, opacity 0.3s, border-color 0.3s; }
 .rule-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; word-break: break-word; flex-grow: 1; }
 .rule-details span { font-weight: 500; color: var(--text-muted-color); }
 .rule-details code { font-family: var(--font-family); color: var(--text-color); font-weight: 500; }
 
 .rule-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-.toggle-btn, .delete-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
-.toggle-btn:hover, .delete-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
-
+.toggle-btn, .delete-btn, .edit-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; color: var(--text-muted-color); }
+.toggle-btn:hover, .delete-btn:hover, .edit-btn:hover { background-color: rgba(128, 128, 128, 0.1); }
+.edit-btn:hover { color: var(--accent-color); }
 .toggle-btn.enabled { color: var(--accent-color); }
 .toggle-btn.disabled { color: var(--text-muted-color); }
-.delete-btn { color: var(--text-muted-color); }
 .delete-btn:hover { color: var(--danger-color); }
 
-/* --- Disabled State --- */
+/* States */
 li.disabled { opacity: 0.6; }
-li.disabled .rule-details code { text-decoration: line-through; text-decoration-color: rgba(255, 255, 255, 0.3); }
+li.disabled .rule-details code { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--text-muted-color) 50%, transparent); }
+li.editing { border-color: var(--accent-color); }
 
-/* --- Scrollbar --- */
+/* Scrollbar */
 .rules-container::-webkit-scrollbar { width: 5px; }
 .rules-container::-webkit-scrollbar-track { background: transparent; }
 .rules-container::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
