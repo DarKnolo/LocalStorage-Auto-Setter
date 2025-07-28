@@ -9,10 +9,9 @@
     --text-muted-color: #8A8A9E;
     --accent-color: #6A67FF;
     --danger-color: #FF5555;
+    --success-color: #22c55e;
     --primary-gradient: linear-gradient(90deg, #FF8C42, #FF3D77);
     --primary-gradient-hover: linear-gradient(90deg, #FF9959, #FF558D);
-
-    /* SYSTEM FONT STACK */
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
@@ -34,12 +33,19 @@ body {
     color: var(--text-color);
     width: 380px;
     margin: 0;
-    animation: fadeIn 0.3s ease-out;
+    overflow: hidden; /* Prevent scrollbars from toast container */
 }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.rule-actions button svg, #support-link svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
-.app-container { padding: 16px; }
+.app-container { padding: 16px; animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* Header & Support Link */
 header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -57,34 +63,35 @@ input[type="text"]:focus-visible { outline: none; border-color: var(--accent-col
 
 #add-rule-btn { cursor: pointer; border: none; border-radius: 20px; padding: 12px; font-size: 14px; font-weight: 600; color: white; background: var(--primary-gradient); transition: all 0.2s; margin-top: 4px; }
 #add-rule-btn:hover { background: var(--primary-gradient-hover); transform: translateY(-2px); }
-
 #cancel-edit-btn { display: none; cursor: pointer; border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-size: 14px; font-weight: 600; color: var(--text-muted-color); background: transparent; transition: all 0.2s; }
 #cancel-edit-btn:hover { background-color: var(--surface-color); border-color: var(--text-muted-color); color: var(--text-color); }
 
 /* Rules List */
 .rules-container { max-height: 250px; overflow-y: auto; padding-right: 5px; }
 ul#rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-
 li { background-color: var(--surface-color); border: 1px solid transparent; border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background-color 0.2s, opacity 0.3s, border-color 0.3s; }
 .rule-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; word-break: break-word; flex-grow: 1; }
 .rule-details span { font-weight: 500; color: var(--text-muted-color); }
 .rule-details code { font-family: var(--font-family); color: var(--text-color); font-weight: 500; }
-
 .rule-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .toggle-btn, .delete-btn, .edit-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; color: var(--text-muted-color); }
 .toggle-btn:hover, .delete-btn:hover, .edit-btn:hover { background-color: rgba(128, 128, 128, 0.1); }
 .edit-btn:hover { color: var(--accent-color); }
 .toggle-btn.enabled { color: var(--accent-color); }
-.toggle-btn.disabled { color: var(--text-muted-color); }
 .delete-btn:hover { color: var(--danger-color); }
-
-/* States */
 li.disabled { opacity: 0.6; }
 li.disabled .rule-details code { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--text-muted-color) 50%, transparent); }
 li.editing { border-color: var(--accent-color); }
+
+/* ---  Notification --- */
+#toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.toast { background-color: var(--surface-color); color: var(--text-color); padding: 12px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); animation: toast-in 0.3s ease, toast-out 0.3s ease 2.7s forwards; }
+.toast.success { border-left: 4px solid var(--success-color); }
+.toast.error { border-left: 4px solid var(--danger-color); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
 
 /* Scrollbar */
 .rules-container::-webkit-scrollbar { width: 5px; }
 .rules-container::-webkit-scrollbar-track { background: transparent; }
 .rules-container::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
-.rules-container::-webkit-scrollbar-thumb:hover { background-color: var(--text-muted-color); }
