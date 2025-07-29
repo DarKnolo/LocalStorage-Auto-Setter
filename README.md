@@ -41,7 +41,7 @@ A simple and powerful browser extension for developers that automatically sets k
 1.  Click the extension icon in your browser toolbar to open the popup.
 2.  Fill in the three fields:
     *   **URL Pattern:** The URL to target (wildcards `*` are supported).
-    *   **LocalStorage Key:** The name of the key to set (e.g., `in-preview-mode`).
+    *   **LocalStorage Key:** The name of the key to set (e.g., `isTreasureHidden`).
     *   **LocalStorage Value:** The value you want to set (e.g., `true`).
 3.  Click **"Add Rule"**.
 4.  Navigate to a URL that matches the pattern. The extension will automatically set the item in your `localStorage`. You can verify this in your browser's developer tools (Application -> Local Storage).
