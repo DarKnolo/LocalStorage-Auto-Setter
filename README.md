@@ -23,7 +23,7 @@ A simple and powerful browser extension for developers that automatically sets k
 
 #### 1. Install from the Chrome Web Store (Recommended)
 
-[Link to your extension on the Chrome Web Store will go here]
+[[Chrome Web Store](https://chromewebstore.google.com/detail/localstorage-auto-setter/epjbikleenhdegeihnmibapnmbandmij)]
 
 #### 2. Install for Development (from source)
 
