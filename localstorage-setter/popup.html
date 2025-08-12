@@ -19,7 +19,11 @@
         <section class="form-section">
             <h2>Add New Rule</h2>
             <div id="rule-form">
-                <input type="text" id="url-pattern" placeholder="e.g. *.domain.com/*" title="e.g. *.domain.com/* or https://localhost:3000/*">
+                <div class="input-with-button">
+                    <input type="text" id="url-pattern" placeholder="e.g. *.domain.com/*" title="e.g. *.domain.com/* or https://localhost:3000/*">
+                    <button id="get-current-url-btn" title="Use current page's URL pattern"></button>
+                    <div id="url-suggestions" class="suggestions-dropdown" style="display: none;"></div>
+                </div>
                 <input type="text" id="ls-key" placeholder="e.g. preview_mode" title="The localStorage key to set">
                 <input type="text" id="ls-value" placeholder="e.g. true" title="The value to set for the key">
                 <button id="add-rule-btn">Add Rule</button>
@@ -28,11 +32,21 @@
         </section>
 
         <section class="rules-section">
-            <h2>Active Rules</h2>
+            <h2>Your Rules</h2>
             <div class="rules-container">
-                <ul id="rules-list">
-                    <!-- Rules are dynamically injected here -->
-                </ul>
+                <div id="active-rules-container" style="display: none;">
+                    <h3>Active on This Page</h3>
+                    <ul id="active-rules-list"></ul>
+                </div>
+                <div id="enabled-rules-container" style="display: none;">
+                    <h3>Enabled</h3>
+                    <ul id="enabled-rules-list"></ul>
+                </div>
+                <div id="disabled-rules-container" style="display: none;">
+                    <h3>Disabled</h3>
+                    <ul id="disabled-rules-list"></ul>
+                </div>
+                <p id="no-rules-message" style="display: none;">You haven't added any rules yet.</p>
             </div>
         </section>
     </main>
