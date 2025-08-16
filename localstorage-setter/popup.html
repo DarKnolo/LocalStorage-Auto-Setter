@@ -11,32 +11,63 @@
 <div class="app-container">
     <header>
         <h1>LocalStorage Auto-Setter</h1>
-        <a href="https://www.buymeacoffee.com/darknolo" id="support-link" target="_blank" title="Support this project">
+        <a href="https://www.buymeacoffee.com/darknolo" id="support-link" target="_blank" title="Support this project" aria-label="Support this project on Buy Me a Coffee">
         </a>
     </header>
 
     <main>
         <section class="form-section">
             <h2>Add New Rule</h2>
-            <div id="rule-form">
-                <input type="text" id="url-pattern" placeholder="e.g. *.domain.com/*" title="e.g. *.domain.com/* or https://localhost:3000/*">
-                <input type="text" id="ls-key" placeholder="e.g. preview_mode" title="The localStorage key to set">
+            <form id="rule-form">
+                <div class="input-with-button">
+                    <input type="text" id="url-pattern" placeholder="e.g. *.domain.com/*" title="e.g. *.domain.com/* or https://localhost:3000/*" required>
+                    <button type="button" id="get-current-url-btn" title="Use current page's URL pattern" aria-label="Suggest URL patterns from current page"></button>
+                    <div id="url-suggestions" class="suggestions-dropdown" style="display: none;"></div>
+                </div>
+                <input type="text" id="ls-key" placeholder="e.g. preview_mode" title="The localStorage key to set" required>
                 <input type="text" id="ls-value" placeholder="e.g. true" title="The value to set for the key">
-                <button id="add-rule-btn">Add Rule</button>
-                <button id="cancel-edit-btn">Cancel</button>
-            </div>
+                <button type="submit" id="add-rule-btn">Add Rule</button>
+                <button type="button" id="cancel-edit-btn">Cancel</button>
+            </form>
         </section>
 
         <section class="rules-section">
-            <h2>Active Rules</h2>
+            <h2>Your Rules</h2>
             <div class="rules-container">
-                <ul id="rules-list">
-                    <!-- Rules are dynamically injected here -->
-                </ul>
+                <div id="active-rules-container" style="display: none;">
+                    <h3>Active on This Page</h3>
+                    <ul id="active-rules-list"></ul>
+                </div>
+                <div id="enabled-rules-container" style="display: none;">
+                    <h3>Enabled</h3>
+                    <ul id="enabled-rules-list"></ul>
+                </div>
+                <div id="disabled-rules-container" style="display: none;">
+                    <h3>Disabled</h3>
+                    <ul id="disabled-rules-list"></ul>
+                </div>
+                <p id="no-rules-message" style="display: none;">You haven't added any rules yet.</p>
             </div>
         </section>
     </main>
 </div>
-<script src="popup.js"></script>
+
+<!-- Template for a single rule item. This is hidden by default. -->
+<template id="rule-template">
+    <!-- The surrounding <li> is now removed from the template -->
+    <div class="rule-details">
+        <div><span>URL: </span><code data-role="pattern"></code></div>
+        <div><span>Key: </span><code data-role="key"></code></div>
+        <div><span>Value: </span><code data-role="value"></code></div>
+    </div>
+    <div class="rule-actions">
+        <button type="button" class="copy-btn" data-action="duplicate" title="Duplicate rule" aria-label="Duplicate rule"></button>
+        <button type="button" class="edit-btn" data-action="edit" title="Edit rule" aria-label="Edit rule"></button>
+        <button type="button" class="toggle-btn" data-action="toggle" title="Disable rule" aria-label="Disable rule"></button>
+        <button type="button" class="delete-btn" data-action="delete" title="Delete rule" aria-label="Delete rule"></button>
+    </div>
+</template>
+
+<script src="popup.js" type="module"></script>
 </body>
 </html>

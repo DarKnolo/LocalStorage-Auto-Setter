@@ -24,6 +24,7 @@
         --text-color: #1A1A2A;
         --text-muted-color: #69697A;
         --accent-color: #5A57E0;
+        --success-color: #15803d; /* Darker green for high contrast on light BG */
     }
 }
 
@@ -36,7 +37,7 @@ body {
     overflow: hidden; /* Prevent scrollbars from toast container */
 }
 
-.rule-actions button svg, #support-link svg {
+#get-current-url-btn svg, .rule-actions button svg, #support-link svg {
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -57,6 +58,23 @@ h2 { font-size: 14px; font-weight: 500; color: var(--text-muted-color); margin: 
 /* Form */
 .form-section { margin-bottom: 24px; }
 #rule-form { display: flex; flex-direction: column; gap: 10px; }
+
+.input-with-button { position: relative; display: flex; align-items: center; }
+#url-pattern { width: 100%; box-sizing: border-box; padding-right: 45px !important; }
+
+#get-current-url-btn {
+    position: absolute; right: 1px; top: 1px; bottom: 1px;
+    width: 42px;
+    border: none; border-radius: 8px;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted-color);
+    transition: color 0.2s, background-color 0.2s;
+}
+#get-current-url-btn:hover { color: var(--accent-color); background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); }
+
+
 input[type="text"] { background-color: var(--surface-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s; }
 input[type="text"]::placeholder { color: var(--text-muted-color); }
 input[type="text"]:focus-visible { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent); }
@@ -66,22 +84,70 @@ input[type="text"]:focus-visible { outline: none; border-color: var(--accent-col
 #cancel-edit-btn { display: none; cursor: pointer; border: 1px solid var(--border-color); border-radius: 20px; padding: 12px; font-size: 14px; font-weight: 600; color: var(--text-muted-color); background: transparent; transition: all 0.2s; }
 #cancel-edit-btn:hover { background-color: var(--surface-color); border-color: var(--text-muted-color); color: var(--text-color); }
 
+/* URL Suggestions Dropdown */
+.suggestions-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.suggestion-item {
+    padding: 10px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-color);
+    word-break: break-all;
+}
+.suggestion-item:hover {
+    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+}
+
+
 /* Rules List */
 .rules-container { max-height: 250px; overflow-y: auto; padding-right: 5px; }
-ul#rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.rules-section h3 {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-muted-color);
+    margin: 16px 0 8px 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-color);
+}
+#no-rules-message { color: var(--text-muted-color); text-align: center; padding: 20px; font-size: 14px; }
+
+/* Dynamic heading margins */
+#active-rules-container h3 { margin-top: 0; }
+#active-rules-container[style*="none"] + #enabled-rules-container h3 { margin-top: 0; }
+#active-rules-container[style*="none"] + #enabled-rules-container[style*="none"] + #disabled-rules-container h3 { margin-top: 0; }
+
+/* Active rules styling */
+#active-rules-container h3 {
+    color: var(--success-color);
+    border-bottom-color: color-mix(in srgb, var(--success-color) 50%, transparent);
+}
+
+ul#active-rules-list, ul#enabled-rules-list, ul#disabled-rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 li { background-color: var(--surface-color); border: 1px solid transparent; border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background-color 0.2s, opacity 0.3s, border-color 0.3s; }
 .rule-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; word-break: break-word; flex-grow: 1; }
 .rule-details span { font-weight: 500; color: var(--text-muted-color); }
 .rule-details code { font-family: var(--font-family); color: var(--text-color); font-weight: 500; }
 .rule-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-.toggle-btn, .delete-btn, .edit-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; color: var(--text-muted-color); }
-.toggle-btn:hover, .delete-btn:hover, .edit-btn:hover { background-color: rgba(128, 128, 128, 0.1); }
-.edit-btn:hover { color: var(--accent-color); }
+.toggle-btn, .delete-btn, .edit-btn, .copy-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; color: var(--text-muted-color); }
+.toggle-btn:hover, .delete-btn:hover, .edit-btn:hover, .copy-btn:hover { background-color: rgba(128, 128, 128, 0.1); }
+.edit-btn:hover, .copy-btn:hover { color: var(--accent-color); }
 .toggle-btn.enabled { color: var(--accent-color); }
 .delete-btn:hover { color: var(--danger-color); }
 li.disabled { opacity: 0.6; }
 li.disabled .rule-details code { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--text-muted-color) 50%, transparent); }
 li.editing { border-color: var(--accent-color); }
+li.active { border-color: var(--success-color); }
 
 /* ---  Notification --- */
 #toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
