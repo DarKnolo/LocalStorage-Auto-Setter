@@ -98,12 +98,16 @@ test('delete rule removes it and shows empty state', async () => {
   await expect(page.locator('#no-rules-message')).toBeVisible();
 });
 
-test('validation error when required fields are empty', async () => {
-  await page.getByRole('button', { name: 'Add Rule' }).click();
-  const errorToast = page.locator('.toast.error');
-  await expect(errorToast).toBeVisible();
-  await expect(errorToast).toContainText('URL Pattern and Key are required.');
-  await expect(page.locator('#no-rules-message')).toBeVisible();
+test('shows native validation when required fields are empty', async () => {
+    await page.getByRole('button', { name: 'Add Rule' }).click();
+    await expect(page.locator('#no-rules-message')).toBeVisible();
+    const isUrlInputInvalid = await page.locator('#url-pattern').evaluate(el => !el.checkValidity());
+    expect(isUrlInputInvalid).toBe(true);
+    await page.locator('#url-pattern').fill('https://example.com');
+    await page.getByRole('button', { name: 'Add Rule' }).click();
+    const isKeyInputInvalid = await page.locator('#ls-key').evaluate(el => !el.checkValidity());
+    expect(isKeyInputInvalid).toBe(true);
+    await expect(page.locator('#no-rules-message')).toBeVisible();
 });
 
 // New: Duplicate/Clone rule
