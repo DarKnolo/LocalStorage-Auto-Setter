@@ -6,7 +6,9 @@ A simple and powerful browser extension for developers that automatically sets l
 
 -   **Set-and-Forget Rules:** Create rules that automatically run every time you visit a matching page.
 -   **Two Core Actions:** Set items in **LocalStorage** or set up **URL Redirects**.
--   **Wildcard URL Matching:** Use wildcards (`*`) to easily target domains, subdomains, and paths (e.g., `*.myapp.com/admin/*`).
+-   **Flexible Matching:**
+    -   **LocalStorage:** Use wildcards (`*`) to target domains and paths (e.g., `https://*.myapp.com/admin/*`).
+    -   **Redirects:** Use exact URLs for precise, reliable navigation changes.
 -   **Smart Suggestions:** Auto-populate new rules by pulling existing keys and values from the current page's localStorage.
 -   **Matched Rule Counter:** The extension icon shows a badge with the count of active rules matching the current page.
 -   **Simple UI:** A clean and intuitive popup for adding, viewing, enabling/disabling, and deleting rules.
@@ -14,10 +16,10 @@ A simple and powerful browser extension for developers that automatically sets l
 
 ## Why Would I Use This?
 
--   **Testing Preview Features:** Automatically set a flag like `adminMode` to `true` to see staging features on a live site.
+-   **Testing Preview Features:** Use a localStorage rule with a wildcard (`*.dev.site.com`) to set `adminMode` to `true` across all development subdomains.
 -   **A/B Testing:** Force your browser into a specific test group by setting a localStorage item.
--   **API Environment Switching:** Use a redirect rule to send requests for `production-api.com/*` to `localhost:8080/*` during development.
--   **Simplifying URLs:** Automatically redirect from a base URL like `myapp.com` to a specific dashboard page like `myapp.com/dashboard/home`.
+-   **Simplifying URLs:** Use a redirect rule to automatically go from a clean URL like `https://company.com/dashboard` to the full URL with login parameters.
+-   **Bypassing Login Pages:** For local development, automatically redirect from `http://localhost:3000/login` to `http://localhost:3000/dashboard`.
 -   **Dismissing Banners:** Permanently dismiss annoying popups by setting the "dismissed" flag in localStorage on every visit.
 
 ## Installation
@@ -41,10 +43,12 @@ A simple and powerful browser extension for developers that automatically sets l
 
 1.  Click the extension icon in your browser toolbar to open the popup.
 2.  Select the action you want to perform: `LocalStorage` or `Redirects`.
-3.  Fill in the fields. Use the "target" icon to get URL suggestions or the "list" icon to get key/value suggestions from the current page.
+3.  Fill in the fields.
+    - For **LocalStorage**, you can use wildcards (`*`) in the URL pattern.
+    - For **Redirects**, you must use the full, exact URL in the "From" field.
 4.  Click **"Add Rule"**.
 5.  Your rules will appear in the list below. You can toggle, edit, duplicate, or delete them from there.
-6.  Navigate to a URL that matches the pattern. The extension will automatically perform the action, and the icon badge will update to show the number of matching rules.
+6.  Navigate to a URL that matches a rule. The extension will automatically perform the action.
 
 ## Contributing
 
