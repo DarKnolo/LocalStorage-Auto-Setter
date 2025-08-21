@@ -93,19 +93,29 @@ body {
 }
 
 .context-switcher button {
-    flex-grow: 1; /* Allow buttons to fill space */
-    border: none;
-    background-color: transparent;
+    flex-grow: 1;
+    border: 1px solid transparent; /* Add border for consistent sizing */
+    background: transparent;
     color: var(--text-muted-color);
     padding: 8px 12px;
     font-size: 13px;
     font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: all 0.2s ease-in-out;
 }
-.context-switcher button.active { color: var(--text-color); background-color: color-mix(in srgb, var(--bg-color) 50%, var(--surface-color)); }
-.context-switcher button:not(.active):hover { background-color: color-mix(in srgb, var(--bg-color) 25%, var(--surface-color)); }
+.context-switcher button:not(.active):hover {
+    background-color: color-mix(in srgb, var(--bg-color) 25%, var(--surface-color));
+    color: var(--text-color);
+}
+
+.context-switcher button.active {
+    color: var(--text-color);
+    font-weight: 600;
+    background-image: linear-gradient(to bottom, color-mix(in srgb, var(--accent-color) 8%, transparent), transparent);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 50%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
 
 
 /* Form */
@@ -233,7 +243,15 @@ li.active::before { background-color: var(--success-color); } /* Active */
 .rule-details { display: flex; flex-direction: column; gap: 4px; font-size: 13px; word-break: break-all; flex-grow: 1; overflow: hidden; }
 .rule-details .rule-pattern { font-weight: 600; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rule-details .rule-data { font-family: var(--font-mono); color: var(--text-muted-color); }
-.rule-details .rule-data code { font-family: inherit; color: var(--text-color); background-color: color-mix(in srgb, var(--bg-color) 50%, var(--surface-color)); padding: 1px 4px; border-radius: 4px; }
+.rule-details .rule-data code { font-family: inherit; background-color: color-mix(in srgb, var(--bg-color) 50%, var(--surface-color)); padding: 1px 4px; border-radius: 4px; }
+
+.rule-details .rule-data code[data-role="key"] {
+    color: var(--success-color);
+}
+.rule-details .rule-data code[data-role="value"] {
+    color: var(--text-color);
+}
+
 
 .rule-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .toggle-btn, .delete-btn, .edit-btn, .copy-btn { cursor: pointer; padding: 6px; border-radius: 50%; border: none; background-color: transparent; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s, color 0.2s; color: var(--text-muted-color); }

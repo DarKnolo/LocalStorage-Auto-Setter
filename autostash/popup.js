@@ -137,7 +137,10 @@ function createRuleElement(rule, isActive) {
     li.classList.toggle('active', isActive);
 
     const ruleType = rule.type || 'localStorage';
-    li.querySelector('[data-role="pattern"]').textContent = rule.pattern;
+    const patternElement = li.querySelector('[data-role="pattern"]');
+    patternElement.textContent = rule.pattern;
+    patternElement.title = rule.pattern;
+
     li.querySelector('[data-role="key"]').textContent = rule.key;
     li.querySelector('[data-role="value"]').textContent = rule.value;
 
