@@ -1,12 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "LocalStorage Auto-Setter",
-  "version": "1.2",
-  "description": "Automatically sets specified key-value pairs in localStorage for matching websites.",
+  "name": "Autostash",
+  "version": "1.3",
+  "description": "Automatically set localStorage values or redirect URLs for specified websites.",
   "permissions": [
     "storage",
     "tabs",
-    "scripting"
+    "scripting",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -30,5 +32,8 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none';"
+  },
+  "declarative_net_request": {
+    "rule_resources": []
   }
 }

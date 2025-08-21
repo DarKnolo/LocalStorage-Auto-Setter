@@ -1,13 +1,11 @@
 /**
- * Converts a wildcard pattern to a regular expression.
+ * Converts a wildcard pattern to a standard regular expression.
+ * Includes start/end anchors for exact matching.
  * @param {string} pattern The wildcard pattern.
  * @returns {RegExp} A RegExp object.
- * @throws {Error} if the pattern is invalid.
  */
 export function wildcardToRegex(pattern) {
-    // Escape all special regex characters.
     const escaped = pattern.trim().replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-    // Replace the wildcard '*' with '.*' to match any characters, including none.
     const regexString = '^' + escaped.replace(/\*/g, '.*') + '$';
     return new RegExp(regexString);
 }

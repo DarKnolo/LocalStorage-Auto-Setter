@@ -1,8 +1,8 @@
-# Privacy Policy for LocalStorage Auto-Setter
+# Privacy Policy for Autostash
 
 **Effective Date: July 23, 2025**
 
-We take your privacy very seriously. This privacy policy explains how the "LocalStorage Auto-Setter" browser extension handles data.
+We take your privacy very seriously. This privacy policy explains how the "Autostash" browser extension handles data.
 
 ### 1. No Collection of Personal Data
 
