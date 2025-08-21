@@ -1,5 +1,5 @@
 {
-  "name": "localstorage-auto-setter-e2e",
+  "name": "autostash-e2e",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -11,4 +11,3 @@
     "playwright": "^1.44.0"
   }
 }
-

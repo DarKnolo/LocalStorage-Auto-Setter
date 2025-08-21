@@ -2,37 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LocalStorage Auto-Setter</title>
+    <title>Autostash</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
 <div id="toast-container"></div>
 
 <div class="app-container">
-    <header>
-        <h1>LocalStorage Auto-Setter</h1>
+    <div class="app-header">
+        <img src="icons/icon48.png" alt="Autostash Logo" class="header-logo" />
+        <div class="context-switcher">
+            <button data-context="localStorage" class="active">LocalStorage</button>
+            <button data-context="redirect">Redirects</button>
+        </div>
         <a href="https://www.buymeacoffee.com/darknolo" id="support-link" target="_blank" title="Support this project" aria-label="Support this project on Buy Me a Coffee">
         </a>
-    </header>
+    </div>
 
     <main>
         <section class="form-section">
-            <h2>Add New Rule</h2>
+            <h2 id="form-title">Add New LocalStorage Rule</h2>
             <form id="rule-form">
                 <div class="input-with-button">
-                    <input type="text" id="url-pattern" placeholder="e.g. *.domain.com/*" title="e.g. *.domain.com/* or https://localhost:3000/*" required>
+                    <input type="text" id="url-pattern" placeholder="URL pattern to match" title="For redirects, this must be a full URL like https://example.com/*" required>
                     <button type="button" id="get-current-url-btn" title="Use current page's URL pattern" aria-label="Suggest URL patterns from current page"></button>
                     <div id="url-suggestions" class="suggestions-dropdown" style="display: none;"></div>
                 </div>
-                <input type="text" id="ls-key" placeholder="e.g. preview_mode" title="The localStorage key to set" required>
-                <input type="text" id="ls-value" placeholder="e.g. true" title="The value to set for the key">
+                <div id="key-input-container" class="input-with-button">
+                    <input type="text" id="rule-key" placeholder="Key / Name" title="The key/name to set" required>
+                    <button type="button" id="get-suggestions-btn" title="Suggest from current page" aria-label="Suggest keys and values from current page"></button>
+                    <div id="kv-suggestions" class="suggestions-dropdown" style="display: none;"></div>
+                </div>
+                <input type="text" id="rule-value" placeholder="Value" title="The value to set. For redirects, use \\1, \\2 to reference wildcards.">
                 <button type="submit" id="add-rule-btn">Add Rule</button>
                 <button type="button" id="cancel-edit-btn">Cancel</button>
             </form>
         </section>
 
         <section class="rules-section">
-            <h2>Your Rules</h2>
+            <h2 id="rules-title">Your LocalStorage Rules</h2>
             <div class="rules-container">
                 <div id="active-rules-container" style="display: none;">
                     <h3>Active on This Page</h3>
@@ -54,11 +62,16 @@
 
 <!-- Template for a single rule item. This is hidden by default. -->
 <template id="rule-template">
-    <!-- The surrounding <li> is now removed from the template -->
     <div class="rule-details">
-        <div><span>URL: </span><code data-role="pattern"></code></div>
-        <div><span>Key: </span><code data-role="key"></code></div>
-        <div><span>Value: </span><code data-role="value"></code></div>
+        <div class="rule-pattern" data-role="pattern"></div>
+        <div class="rule-data">
+            <div data-field="key-value" style="display: none;">
+                <code data-role="key"></code> = <code data-role="value"></code>
+            </div>
+            <div data-field="redirect" style="display: none;">
+                → <code data-role="value"></code>
+            </div>
+        </div>
     </div>
     <div class="rule-actions">
         <button type="button" class="copy-btn" data-action="duplicate" title="Duplicate rule" aria-label="Duplicate rule"></button>

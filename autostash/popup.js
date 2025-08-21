@@ -4,18 +4,25 @@ import { wildcardToRegex } from './utils.js';
 // --- State ---
 let rules = [];
 let editingRuleId = null;
+let currentContext = 'localStorage'; // 'localStorage', 'redirect'
 
 // --- Element Selectors ---
 const ruleForm = document.getElementById('rule-form');
 const urlPatternInput = document.getElementById('url-pattern');
-const keyInput = document.getElementById('ls-key');
-const valueInput = document.getElementById('ls-value');
+const keyInput = document.getElementById('rule-key');
+const valueInput = document.getElementById('rule-value');
 const addRuleBtn = document.getElementById('add-rule-btn');
 const cancelEditBtn = document.getElementById('cancel-edit-btn');
 
 const getCurrentUrlBtn = document.getElementById('get-current-url-btn');
+const getSuggestionsBtn = document.getElementById('get-suggestions-btn');
 const urlSuggestions = document.getElementById('url-suggestions');
+const kvSuggestions = document.getElementById('kv-suggestions');
 const supportLink = document.getElementById('support-link');
+const contextSwitcher = document.querySelector('.context-switcher');
+
+const formTitle = document.getElementById('form-title');
+const rulesTitle = document.getElementById('rules-title');
 
 const activeRulesList = document.getElementById('active-rules-list');
 const enabledRulesList = document.getElementById('enabled-rules-list');
@@ -34,14 +41,28 @@ const ICONS = {
     EDIT: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>',
     COFFEE: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>',
     TARGET: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line></svg>',
-    COPY: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'
+    COPY: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+    LIST: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>'
 };
+
+/** This function is injected into the page to read its storage. */
+function getStorageItems(storageType) {
+    const storage = window[storageType];
+    const items = [];
+    for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
+        if (key) {
+            items.push({ key, value: storage.getItem(key) });
+        }
+    }
+    return items;
+}
 
 // --- Data Logic ---
 async function loadAndRenderRules() {
     const data = await chrome.storage.sync.get({ rules: [] });
     rules = data.rules || [];
-    await renderRules();
+    await renderUI();
 }
 
 async function saveRules() {
@@ -52,22 +73,39 @@ async function saveRules() {
 // --- Matching Logic ---
 function isRuleMatch(rule, url) {
     if (!url?.startsWith('http')) return false;
-    try {
-        return wildcardToRegex(rule.pattern).test(url);
-    } catch (e) {
-        console.warn(`Rule with invalid pattern skipped: "${rule.pattern}"`);
-        return false;
+
+    if (rule.type === 'redirect') {
+        // For redirects, do exact URL matching (with trailing slash normalization)
+        const normalizedUrl = url.replace(/\/$/, '');
+        const normalizedPattern = rule.pattern.replace(/\/$/, '');
+        return normalizedUrl === normalizedPattern;
+    } else {
+        // For localStorage, use wildcard matching
+        try {
+            return wildcardToRegex(rule.pattern).test(url);
+        } catch (e) {
+            console.warn(`[Autostash] Rule with invalid pattern skipped: "${rule.pattern}"`);
+            return false;
+        }
     }
 }
 
 // --- UI Rendering ---
+async function renderUI() {
+    await updateUIForContext();
+    await renderRules();
+}
+
 async function renderRules() {
     const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const currentUrl = currentTab?.url;
     [activeRulesList, enabledRulesList, disabledRulesList].forEach(list => list.innerHTML = '');
 
-    if (rules.length === 0) {
+    const filteredRules = rules.filter(rule => (rule.type || 'localStorage') === currentContext);
+
+    if (filteredRules.length === 0) {
         noRulesMessage.style.display = 'block';
+        noRulesMessage.textContent = `You haven't added any ${contextConfig[currentContext].name} rules yet.`;
         [activeRulesContainer, enabledRulesContainer, disabledRulesContainer].forEach(c => c.style.display = 'none');
         return;
     }
@@ -75,7 +113,7 @@ async function renderRules() {
     noRulesMessage.style.display = 'none';
     const activeRules = [], enabledRules = [], disabledRules = [];
 
-    rules.forEach(rule => {
+    filteredRules.forEach(rule => {
         if (rule.enabled === false) disabledRules.push(rule);
         else if (isRuleMatch(rule, currentUrl)) activeRules.push(rule);
         else enabledRules.push(rule);
@@ -98,9 +136,21 @@ function createRuleElement(rule, isActive) {
     li.classList.toggle('editing', rule.id === editingRuleId);
     li.classList.toggle('active', isActive);
 
-    li.querySelector('[data-role="pattern"]').textContent = rule.pattern;
+    const ruleType = rule.type || 'localStorage';
+    const patternElement = li.querySelector('[data-role="pattern"]');
+    patternElement.textContent = rule.pattern;
+    patternElement.title = rule.pattern;
+
     li.querySelector('[data-role="key"]').textContent = rule.key;
     li.querySelector('[data-role="value"]').textContent = rule.value;
+
+    li.querySelectorAll('[data-field]').forEach(el => el.style.display = 'none');
+
+    if (ruleType === 'redirect') {
+        li.querySelector('[data-field="redirect"]').style.display = 'block';
+    } else {
+        li.querySelector('[data-field="key-value"]').style.display = 'block';
+    }
 
     const isEnabled = rule.enabled !== false;
     const toggleBtn = li.querySelector('.toggle-btn');
@@ -125,16 +175,43 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// --- Form & Edit Mode ---
+// --- Context UI Logic ---
+const contextConfig = {
+    localStorage: { name: 'LocalStorage', keyPlaceholder: 'Key', valuePlaceholder: 'Value', showKey: true },
+    redirect: { name: 'Redirect', keyPlaceholder: 'N/A', valuePlaceholder: 'Redirect to URL', showKey: false },
+};
+
+async function updateUIForContext() {
+    const config = contextConfig[currentContext];
+
+    formTitle.textContent = `Add New ${config.name} Rule`;
+    rulesTitle.textContent = `Your ${config.name} Rules`;
+    addRuleBtn.textContent = editingRuleId ? 'Update Rule' : 'Add Rule';
+
+    const keyInputContainer = document.getElementById('key-input-container');
+    keyInputContainer.style.display = config.showKey ? 'flex' : 'none';
+    keyInput.required = config.showKey;
+    keyInput.placeholder = config.keyPlaceholder;
+
+    valueInput.placeholder = config.valuePlaceholder;
+    urlPatternInput.placeholder = currentContext === 'redirect' ? 'Exact URL to match (e.g. https://site.com)' : 'URL pattern to match (supports wildcards)';
+    urlPatternInput.title = currentContext === 'redirect' ? 'Enter the exact URL that should trigger the redirect' : 'URL pattern using wildcards like https://*.domain.com/*';
+
+    contextSwitcher.querySelectorAll('button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.context === currentContext);
+    });
+}
+
 async function enterEditMode(rule) {
     editingRuleId = rule.id;
+    currentContext = rule.type || 'localStorage';
     urlPatternInput.value = rule.pattern;
-    keyInput.value = rule.key;
+    keyInput.value = rule.key || '';
     valueInput.value = rule.value;
     addRuleBtn.textContent = 'Update Rule';
     cancelEditBtn.style.display = 'block';
     urlPatternInput.focus();
-    await renderRules();
+    await renderUI();
 }
 
 async function exitEditMode() {
@@ -142,30 +219,104 @@ async function exitEditMode() {
     ruleForm.reset();
     addRuleBtn.textContent = 'Add Rule';
     cancelEditBtn.style.display = 'none';
-    await renderRules();
+    await renderUI();
 }
 
 // --- Event Handlers ---
 async function handleFormSubmit(event) {
     event.preventDefault();
+
     const pattern = urlPatternInput.value.trim();
     const key = keyInput.value.trim();
     const value = valueInput.value.trim();
 
+    // Simple validation for redirects
+    if (currentContext === 'redirect') {
+        if (!pattern.startsWith('http')) {
+            showToast('Please enter a complete URL starting with http:// or https://', 'error');
+            return;
+        }
+        if (!value.startsWith('http')) {
+            showToast('Redirect target must be a complete URL starting with http:// or https://', 'error');
+            return;
+        }
+    }
+
+    const newRuleData = {
+        pattern,
+        key: currentContext === 'redirect' ? 'redirect' : key,
+        value,
+        type: currentContext
+    };
+
     if (editingRuleId) {
         const ruleIndex = rules.findIndex(r => r.id === editingRuleId);
         if (ruleIndex > -1) {
-            rules[ruleIndex] = { ...rules[ruleIndex], pattern, key, value };
+            rules[ruleIndex] = { ...rules[ruleIndex], ...newRuleData };
             showToast('Rule updated successfully!');
         }
     } else {
-        rules.push({ id: Date.now(), pattern, key, value, enabled: true });
+        rules.push({ id: Date.now(), ...newRuleData, enabled: true });
         showToast('Rule added successfully!');
     }
 
     await saveRules();
     await exitEditMode();
     urlPatternInput.focus();
+}
+
+async function handleGetSuggestionsClick() {
+    if (kvSuggestions.style.display === 'block' || currentContext !== 'localStorage') {
+        kvSuggestions.style.display = 'none';
+        return;
+    }
+
+    let items = [];
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab?.url?.startsWith('http')) {
+            showToast('Cannot get suggestions from this page.', 'error');
+            return;
+        }
+
+        const results = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: getStorageItems,
+            args: ['localStorage'],
+        });
+        items = results[0]?.result || [];
+
+    } catch (e) {
+        showToast('Could not retrieve data from the page.', 'error');
+        console.error("Error getting suggestions:", e);
+        return;
+    }
+
+    renderSuggestionsDropdown(items);
+}
+
+function renderSuggestionsDropdown(items) {
+    kvSuggestions.innerHTML = '';
+    if (items.length === 0) {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'suggestion-item';
+        itemEl.textContent = 'No items found on this page.';
+        kvSuggestions.appendChild(itemEl);
+    } else {
+        items.forEach(item => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'kv-suggestion-item';
+            itemEl.innerHTML = `<div class="key">${item.key}</div><div class="value">${item.value}</div>`;
+            itemEl.addEventListener('click', () => {
+                keyInput.value = item.key;
+                valueInput.value = item.value;
+                kvSuggestions.style.display = 'none';
+                valueInput.focus();
+            });
+            kvSuggestions.appendChild(itemEl);
+        });
+    }
+    kvSuggestions.style.display = 'block';
 }
 
 async function handleRulesListClick(event) {
@@ -180,12 +331,14 @@ async function handleRulesListClick(event) {
 
     switch (action) {
         case 'duplicate':
-            rules.push({ ...rule, id: Date.now() });
-            await saveRules()
-            const newRule = rules[rules.length - 1];
+        {
+            const newRule = { ...rule, id: Date.now() };
+            rules.push(newRule);
+            await saveRules();
             showToast('Rule duplicated. Now editing the copy.');
             await enterEditMode(newRule);
             break;
+        }
         case 'edit':
             await enterEditMode(rule);
             break;
@@ -215,16 +368,33 @@ async function handleGetCurrentUrlClick() {
         }
 
         const url = new URL(tab.url);
-        const suggestions = generateSuggestionsForUrl(url);
+        let suggestions;
+
+        if (currentContext === 'redirect') {
+            // For redirects, suggest exact URLs
+            suggestions = [
+                tab.url,
+                `${url.protocol}//${url.hostname}`,
+                `${url.protocol}//${url.hostname}/`
+            ];
+        } else {
+            // For localStorage, suggest wildcard patterns
+            suggestions = generateSuggestionsForUrl(url);
+        }
+
         urlSuggestions.innerHTML = '';
-        suggestions.forEach(suggestion => {
+        [...new Set(suggestions)].forEach(suggestion => {
             const item = document.createElement('div');
             item.className = 'suggestion-item';
             item.textContent = suggestion;
             item.addEventListener('click', () => {
                 urlPatternInput.value = suggestion;
                 urlSuggestions.style.display = 'none';
-                keyInput.focus();
+                if (currentContext === 'redirect') {
+                    valueInput.focus();
+                } else {
+                    keyInput.focus();
+                }
             });
             urlSuggestions.appendChild(item);
         });
@@ -250,11 +420,20 @@ function generateSuggestionsForUrl(url) {
 function initialize() {
     supportLink.innerHTML = ICONS.COFFEE;
     getCurrentUrlBtn.innerHTML = ICONS.TARGET;
+    getSuggestionsBtn.innerHTML = ICONS.LIST;
 
     ruleForm.addEventListener('submit', handleFormSubmit);
-    // CHANGED: Use async arrow function for event listeners calling async functions
-    cancelEditBtn.addEventListener('click', async () => await exitEditMode());
+    cancelEditBtn.addEventListener('click', exitEditMode);
     getCurrentUrlBtn.addEventListener('click', handleGetCurrentUrlClick);
+    getSuggestionsBtn.addEventListener('click', handleGetSuggestionsClick);
+
+    contextSwitcher.addEventListener('click', async (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            currentContext = e.target.dataset.context;
+            await exitEditMode(); // Reset form when switching context
+        }
+    });
+
     [activeRulesList, enabledRulesList, disabledRulesList].forEach(list => {
         list.addEventListener('click', handleRulesListClick);
     });
@@ -263,10 +442,13 @@ function initialize() {
         if (!getCurrentUrlBtn.contains(e.target) && !urlSuggestions.contains(e.target)) {
             urlSuggestions.style.display = 'none';
         }
+        if (!getSuggestionsBtn.contains(e.target) && !kvSuggestions.contains(e.target)) {
+            kvSuggestions.style.display = 'none';
+        }
     });
 
     loadAndRenderRules().catch(error => {
-        console.error("Failed to initialize the popup:", error);
+        console.error("[Autostash] Failed to initialize the popup:", error);
         showToast("Error: Could not load rules.", "error");
     });
 }
